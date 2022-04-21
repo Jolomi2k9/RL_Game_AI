@@ -21,10 +21,6 @@
 [Re-testing and Re-Evaluation](#re-testing-and-re-evaluation)
 
 
-```python
-model = PPO.load('<Directory of best model>')
-```
-
 
 ## Introduction
 
