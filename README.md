@@ -34,6 +34,9 @@ The project structure is as follows:
 
  ![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Software%20Structure.png "Project Structure")
 
+
+We create an interface that can relay information from the learning environment to the gym using wrappers, the reinforcement learning algorithms can then interact with the game using openAI gym 
+
 ## Video game environments
 
 The interface we built for Vizdoom is based on [this](https://github.com/nicknochnack/DoomReinforcementLearning/blob/main/VizDoom-Basic-Tutorial.ipynb) implementation with modifications to suit our project.
