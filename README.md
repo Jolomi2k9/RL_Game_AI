@@ -27,9 +27,9 @@
 The idea behind this project is to implement and test different reinforcement learning algorithms in different video game environment types.
 In this project we will be focusing on [VizDoom](http://vizdoom.cs.put.edu.pl/) and Unity game engine environments.
 
-The project structure is as follows:
+The project structure and example is as follows:
 
-
+![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/GitGifBasic.gif "Unity Basic")
 
 
  ![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Software%20Structure.png "Project Structure")
