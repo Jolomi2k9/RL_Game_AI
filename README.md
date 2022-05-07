@@ -31,6 +31,8 @@ The project structure and example is as follows:
 
 ![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/GitGifBasic.gif "Unity Basic")
 
+![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Gif_doom.gif "VizDoom Basic")
+
 
  ![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Software%20Structure.png "Project Structure")
 
