@@ -39,7 +39,9 @@ Examples of learning environment used in this project are as follows:
 </table>
 
 
-The project structure is as follows
+The project structure is as follows:
+
+
  ![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Software%20Structure.png "Project Structure")
 
 
