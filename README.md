@@ -27,19 +27,85 @@
 The idea behind this project is to implement and test different reinforcement learning algorithms in different video game environment types.
 In this project we will be focusing on [VizDoom](http://vizdoom.cs.put.edu.pl/) and Unity game engine environments.
 
-The project structure and example is as follows:
-
-![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/GitGifBasic.gif "Unity Basic")
-
-![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Gif_doom2.gif "VizDoom Basic")
+Examples of learning environment used in this project are as follows:
 
 
+<table>
+      <tr>
+<td><img src="https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/GitGifBasic.gif" width="480" height="320"></td>
+<td><img src="https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Gif_doom2.gif" width="480" height="320"></td>
+   </tr>
+   <tr>
+</table>
+
+
+The project structure is as follows
  ![alt text](https://github.com/Jolomi2k9/RL_Game_AI/blob/main/images/Software%20Structure.png "Project Structure")
 
 
-We create an interface that can relay information from the learning environment to the gym using wrappers, the reinforcement learning algorithms can then interact with the game using openAI gym 
+We create interfaces that can relay information from the learning environment to the gym using wrappers, the reinforcement learning algorithms can then interact with the game using openAI gym 
 
 ## Video game environments
+
+The unity environment used is the [Unity ML-agents Toolkit example environement](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md) which are built in the Unity game engine and provided by Unity technologies as a test environment for RL and also as a template to build new enviroments.
+
+However,these environments are built primarily for use with Unity developed algorithms and tools, Unity does include a wrapper for use in openai gym, but these are not specific to ML-agents and we had to write an appropriate interface for our purpose
+and with the algorithms we employed.
+
+
+```python
+class UnityGymBasic(Env):
+    def __init__(self, render=False):
+        super(UnityGymBasic, self).__init__()
+        
+        #Used for modifying the unity environment
+        channel = EngineConfigurationChannel()
+        
+        #Our Unity script is written in C# while most RL algorithms are in python 
+        #We will use the UnityEnvironment wrapper to be able to communicate with the
+        #unity environment using python.       
+        #We will also decide if we want to render game environment while training. ,side_channels=[channel]
+        if render == False:
+            env = UnityEnvironment(env_path, worker_id = 0,side_channels=[channel], no_graphics=True)
+        else:
+            env = UnityEnvironment(env_path, worker_id = 0,side_channels=[channel])       
+        
+        
+        #We change the time scale of the game using a unity environment side channel
+        #This enables us to speed up the learning process but the physics in the game may perform unpredictably
+        channel.set_configuration_parameters(time_scale = 4.0)
+        #Wrapping the python unity environment so that we can use it in openai gym
+        env = UnityToGymWrapper(env, allow_multiple_obs=True)
+        
+        
+        
+        #We define the action space and size as well as the observation space
+        #this allows our RL algorithms to effectivly communicate with the environment
+        self.env = env
+        self.action_space = self.env.action_space
+        self.action_size = self.env.action_size
+        self.observation_space = gym.spaces.Box(low=0, high=1, shape=(1,64), dtype=np.uint8)       
+
+    #reset the environment 
+    def reset(self):       
+        return self.env.reset()
+    #This moves the game foward and returns the game state s, reward r
+    #done d(to indicate if the game is done) and information info from the game such as player lives
+    def step(self, action):
+        s, r, d, info = self.env.step(action)
+        return s, float(r), d, info
+    #Closes the environment
+    def close(self):
+        #self.env.close()
+        pass
+    #render the environment
+    def render(self, mode="human"):
+        self.env.render()
+        #pass
+```
+
+This enables our custom openai algorithms to interact and communicate effectively with the Unity environment, we configure the game to send the agent observations and rewards which it will use to learning.
+We also defined the action space, this is how the agent will take action in the game environment.
 
 The interface we built for Vizdoom is based on [this](https://github.com/nicknochnack/DoomReinforcementLearning/blob/main/VizDoom-Basic-Tutorial.ipynb) implementation with modifications to suit our project.
 
@@ -48,8 +114,7 @@ We clone the game from github
 cd github & git clone https://github.com/mwydmuch/ViZDoom.git
 ``` 
 
-For our agent to communicate effectively with the game , we need to configure the game to send the agent observations and rewards which it will use to learning.
-We also define the action space, this is how the agent will take action in the game environment.
+The way our agent interacts with the vizdoom environment is similar to the unity environment with observations and rewards being sent to the agent from the environment and the agent taking action in the environment.
 
 ```python
 #Define our vizdoom environment class
@@ -128,12 +193,12 @@ To load the game we simply call the vizdoom method and pass in if we want the en
 env = VizDoomGym(render=True)
 ``` 
 
-The unity environment interface was built using the [unity ml-agents gym wrapper](https://github.com/Unity-Technologies/ml-agents/tree/main/gym-unity)
+
 
 ## Callbacks
 
 Callbacks are a way to periodically save the best model from our training at several intervals during training, this enables us to observe the progression of the model.
-It also enables us save logs from the trainging which is helpfull in visualizing the agent performance. Again, our implementation will be base on [this](https://github.com/nicknochnack/DoomReinforcementLearning/blob/main/VizDoom-Basic-Tutorial.ipynb) implementation with modification made to suit this project.
+It also enables us save logs from the trainging which is helpfull in visualizing the agent performance. Again, our implementation will be base on [this](https://github.com/nicknochnack/DoomReinforcementLearning/blob/main/VizDoom-Basic-Tutorial.ipynb) implementation with modification made to suit this project for both our Unity and Vizdoom environment.
 
 ```python
 class TrainingAndLoggingCallback(BaseCallback):
@@ -170,7 +235,7 @@ callback = TrainingAndLoggingCallback(check_freq=10000, save_path=CHECKPOINT_DIR
 
 For the reinforcement learning algorithms we used algorithms from [stablebaselines3](https://stable-baselines3.readthedocs.io/en/master/guide/install.html) with some modifications to the algorithms for more granular control
 
-Below are modifications made to the DQN implementations of stablebaselines 3 algorithm
+Below are customized CNN feature extractor we used for getting observations from the Vizdoom environment, this is based on a template from openai stablebaselines 3
 
 ```python
 
@@ -183,12 +248,10 @@ class CustomCNN(BaseFeaturesExtractor):
         # Re-ordering will be done by pre-preprocessing or wrapper
         n_input_channels = observation_space.shape[0]
         self.cnn = nn.Sequential(
-            nn.Conv2d(n_input_channels, 32, kernel_size=8, stride=4, padding=0),
+            nn.Conv2d(n_input_channels, 32, kernel_size=3, stride=2, padding=0),
             nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=0),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=0),
-            nn.ReLU(),
+            nn.Conv2d(32,32, kernel_size=2, stride=2, padding=0),
+            nn.ReLU(),            
             nn.Flatten(),
         )
 
@@ -210,7 +273,6 @@ policy_kwargs = dict(
 
 ```
 
-This is the neural network with the hidden layers and neurons manually specified, however aspects of the DQN algorithm such as action selection policy and experience replay are hangled by stablebaselines
 
 ## Model building
 
@@ -222,16 +284,16 @@ model = DQN("CnnPolicy", env, buffer_size = 320000,batch_size = 64, policy_kwarg
              verbose=1,optimize_memory_usage = True, learning_rate=0.001)
 
 ```
-In the code above we also passed in our custom neural network using policy_kwargs
+In the code above we also passed in our custom feature extractor using policy_kwargs
 
 ## Agent Training
 
 To train the agent we simply call learn on the created model
 
 ```python
-model.learn(total_timesteps=100000,callback=callback)
+model.learn(total_timesteps=150000,callback=callback)
 ```
-This will train the model 100000 timesteps and will save the best model every 10000 timesteps based on our callbacks
+This will train the model 150000 timesteps and will save the best model every 10000 timesteps based on our callbacks
 
 ## Testing and evaluation
 
