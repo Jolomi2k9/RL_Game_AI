@@ -49,7 +49,9 @@ We create interfaces that can relay information from the learning environment to
 
 ## Video game environments
 
-#### Unity Environment
+
+### Unity Environment
+
 
 The unity environment used is the [Unity ML-agents Toolkit example environement](https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md) which are built in the Unity game engine and provided by Unity technologies as a test environment for RL and also as a template to build new enviroments.
 
@@ -127,7 +129,10 @@ env = UnityGymBasic(render = True)
 
 The variable "env" is then passed as an argument in our algorithm for the agent to train in.
 
-#### VizDoom Environment
+
+### VizDoom Environment
+
+
 
 The interface we built for Vizdoom is based on [this](https://github.com/nicknochnack/DoomReinforcementLearning/blob/main/VizDoom-Basic-Tutorial.ipynb) implementation with modifications to suit our project.
 
