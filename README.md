@@ -54,6 +54,17 @@ The unity environment used is the [Unity ML-agents Toolkit example environement]
 However,these environments are built primarily for use with Unity developed algorithms and tools, Unity does include a wrapper for use in openai gym, but these are not specific to ML-agents and we had to write an appropriate interface for our purpose
 and with the algorithms we employed.
 
+To setup the unity environment, we simply pass in the path of the game executable file, an example is as follows:
+
+```python
+env_path = "C:/Users/Jolomi/Downloads/CCT 4th Year/Capstone/Unity_ML/UL_ML/TestBuild_Basic/UL_ML.exe"
+``` 
+
+The unity game is written in C# and the reinforcement learning algorithms used in this project are written in python, Unity provides a UnityEnvironment wrapper,
+This enables us to communicate with the unity game using python.
+
+After that we wrap the environment in a unity to gym wrapper, This enables our custom openai algorithms to interact and communicate effectively with the Unity environment,
+we configure the game to send the agent observations and rewards which it will use to learning. We also defined the action space, this is how the agent will take action in the game environment :
 
 ```python
 class UnityGymBasic(Env):
@@ -106,8 +117,13 @@ class UnityGymBasic(Env):
         #pass
 ```
 
-This enables our custom openai algorithms to interact and communicate effectively with the Unity environment, we configure the game to send the agent observations and rewards which it will use to learning.
-We also defined the action space, this is how the agent will take action in the game environment.
+We can then create a Unity learning environment that our algorithms interact with, we can also specify an option to render the environment or not:
+
+```python
+env = UnityGymBasic(render = True)
+``` 
+
+The variable "env" is then passed as an argument in our algorithm for the agent to train in.
 
 The interface we built for Vizdoom is based on [this](https://github.com/nicknochnack/DoomReinforcementLearning/blob/main/VizDoom-Basic-Tutorial.ipynb) implementation with modifications to suit our project.
 
